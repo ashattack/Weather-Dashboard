@@ -4,30 +4,60 @@ const API_KEY = "2b2802fb51ec69c0be1a70399e03270d";
 const LOCAL_STORAGE_KEY = "weather-dashboard-history"
 
 
-function searchWeather(searchValue) {
-    fetch(`http://api.openweathermap.org/data/2.5/weather?q=${searchValue}&APPID=${API_KEY}`)
+function searchWeather(searchValue, callback) {
+    fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${searchValue}&APPID=${API_KEY}`)
         .then(res => {
             return res.json();
         }).then(function (res) {
             console.log(res);
+            callback(res)
         }).catch(err => {
             console.log('catch error')
             console.log(err)
+            callback(err)
         })
 }
 
 function saveHistory(searchValue) {
-    const localhistory = localStorage.getItem(LOCAL_STORAGE_KEY);
-    localStorage.setItem(LOCAL_STORAGE_KEY, localhistory + str(`\n${searchValue}`))
+    const localhistory = localStorage.getItem(LOCAL_STORAGE_KEY) || "";
+    localStorage.setItem(LOCAL_STORAGE_KEY, localhistory + `\n${searchValue}`)
 }
 
+function postFiveDayForecast(result) {
+    if (result.cod == "200") {
+        // yaaaaa a city
+        saveHistory(result.city.name)
+        loadHistory()
+        // make html dance for the fellas
+    } else if (result.cod == "404") {
+        // not a citty
+        // log err msg saying city not found
+        console.error("darn")
+    }
+
+}
+
+function loadHistory() {
+    const localhistory = localStorage.getItem(LOCAL_STORAGE_KEY) || "";
+    let cities = localhistory.split('\n')
+    cities.map(city => {
+        $('#citylist').append(
+            `<div id=${city}class="form-inline form-group">
+        <button class="btn btn-primary" id="search-button">${city}
+        </button></div>`)
+    })
+}
+
+
 $(document).ready(function () {
+
+    loadHistory()
 
     $("#search-button").on("click", function () {
         searchValue = $("#search-value").val();
         console.log(searchValue)
         $("search-value").val("")
-        searchWeather(searchValue)
+        let result = searchWeather(searchValue, postFiveDayForecast)
     });
 
     function firstRow(response) {
