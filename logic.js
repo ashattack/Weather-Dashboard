@@ -3,14 +3,17 @@
 const API_KEY = "2b2802fb51ec69c0be1a70399e03270d";
 const LOCAL_STORAGE_KEY = "weather-dashboard-history"
 
-
+//calling the API key
 function searchWeather(searchValue, callback) {
     fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${searchValue}&APPID=${API_KEY}`)
+        //a promise
         .then(res => {
             return res.json();
         }).then(function (res) {
             console.log(res);
+            //is a function that is postFiveDayForecast
             callback(res)
+            //if there are errors
         }).catch(err => {
             console.log('catch error')
             console.log(err)
@@ -57,7 +60,7 @@ $(document).ready(function () {
         searchValue = $("#search-value").val();
         console.log(searchValue)
         $("search-value").val("")
-        let result = searchWeather(searchValue, postFiveDayForecast)
+        searchWeather(searchValue, postFiveDayForecast)
     });
 
     function firstRow(response) {
