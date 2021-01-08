@@ -42,20 +42,27 @@ function getOneCallApi(coords, callback) {
 }
 
 function writeCurrentConditionsToDom(res) {
+    let climatenow = $("#climatenow")
+    climatenow.html(`
+    <div>
+        <h2>${res.name}</h2>
+        <img src="http://openweathermap.org/img/wn/${res.weather[0].icon}.png" />
+        <h2> Temperature: ${(res.main.temp - 32) / 1.8} </h2>
+        <h2> Humidity: ${res.main.humidity} </h2>
+        <h2> UV Index:  </h2>
+    </div>`)
 
-    var today = $("<h2>").text(searchValue + ": " + date);
-    var icon = $("<img>");
-    weatherIcon.attr("src", "http://openweathermap.org/img/wn/" + response.weather[0].icon + ".png");
-    todaysWeather.append(weatherIcon);
-    console.log(weatherIcon);
-    let temperate = $("div").text("Temperature: " + response.main.temp);
-    let humidity = $("div").text("Humidity: " + response.main.humidity);
-    let windSpeed
 
 }
 
 function addUvi(uvi) {
     $("#uti").text(`UVI: ${uvi}`)
+}
+
+function unixToTime(x) {
+    var d = new Date(0); // The 0 there is the key, which sets the date to the epoch
+    d.setUTCSeconds(x);
+    return d
 }
 
 function writeFiveDaysToDom(res) {
@@ -64,9 +71,10 @@ function writeFiveDaysToDom(res) {
     $("#nextfivedays").html(forcast.map(x => `
     <div class="card">
     <div class="card-body">
-        <h4>${x.dt}</h4>
-        <h6>Temp ${x.max}</h6>
-        <h6>Temp ${x.humidity}</h6>
+        <h4>${unixToTime(x.dt)}</h4>
+        <img src="http://openweathermap.org/img/wn/${x.weather[0].icon}.png" />
+        <h6>Temp ${(x.temp.max - 32) / 1.8}</h6>
+        <h6>Humidity ${x.humidity}</h6>
     </div>
   </div>`))
 }
