@@ -11,6 +11,7 @@ function searchWeather(searchValue) {
         }).then(function (res) {
             console.log(res);
         }).catch(err => {
+            console.log('catch error')
             console.log(err)
         })
 }
